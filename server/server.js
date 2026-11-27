@@ -8,7 +8,7 @@ import pool from './config/db.js'
 dotenv.config()
 const app=express()
 const __dirname=path.dirname(fileURLToPath(import.meta.url))
-app.use(cors({origin:process.env.CLIENT_URL || 'http://localhost:5173'}))
+app.use(cors({origin:process.env.CLIENT_URL || 'https://atelier-hotel-management-1.onrender.com'}))
 app.use(express.json())
 app.use('/uploads',express.static(path.join(__dirname,'uploads')))
 app.get('/api/health',async(_req,res)=>{try{await pool.query('SELECT 1');res.json({status:'ok',database:'connected'})}catch{res.status(503).json({status:'error',database:'disconnected'})}})
