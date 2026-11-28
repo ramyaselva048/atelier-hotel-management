@@ -11,7 +11,24 @@ const blank = { title:'', description:'', latitude:'', longitude:'', price:'' }
 export default function HotelFormPage() {
   const { id } = useParams(), editing = Boolean(id), dispatch = useDispatch(), navigate = useNavigate()
   const [form,setForm] = useState(blank), [file,setFile] = useState(null), [preview,setPreview] = useState(''), [error,setError] = useState(''), [saving,setSaving] = useState(false)
-  useEffect(()=>{ if(editing) api.get(`/hotels/${id}`).then(({data})=>{setForm(data.hotel);setPreview(data.hotel.image_path ? imageUrl(data.hotel.image_path) : '')}).catch(()=>setError('Unable to load this hotel.')) },[id,editing])
+  useEffect(() => {
+  if (editing) {
+    api.get(`/hotels/${id}`)
+      .then(({ data }) => {
+        const hotel = data.hotel
+
+        setForm({
+          ...hotel,
+          latitude: String(Number(hotel.latitude)),
+          longitude: String(Number(hotel.longitude)),
+          price: String(Number(hotel.price))
+        })
+
+        setPreview(hotel.image_path ? imageUrl(hotel.image_path) : '')
+      })
+      .catch(() => setError('Unable to load this hotel.'))
+  }
+}, [id, editing])
   const change = e => setForm({...form,[e.target.name]:e.target.value})
   const choose = e => { const selected=e.target.files?.[0]; if(!selected)return; if(!selected.type.startsWith('image/')){setError('Please select an image file.');return} if(selected.size>5*1024*1024){setError('Image must be smaller than 5 MB.');return} setFile(selected);setPreview(URL.createObjectURL(selected));setError('') }
   const submit = async e => {
